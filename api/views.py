@@ -48,20 +48,19 @@ def tutorials(request):
                         {"message ": "Not a Tutorial link"},
                         status=status.HTTP_406_NOT_ACCEPTABLE
                     )
-                else:
-                    tutorial_object = Tutorial.objects.create(
-                        title=title,
-                        link=request.data['link'],
-                        category=request.data['category']
-                    )
-                    for tag in tags:
-                        obj, created = Tag.objects.get_or_create(name=tag)
+                tutorial_object = Tutorial.objects.create(
+                    title=title,
+                    link=request.data['link'],
+                    category=request.data['category']
+                )
+                for tag in tags:
+                    obj, created = Tag.objects.get_or_create(name=tag)
 
-                    tag_obj_list = Tag.objects.filter(name__in=tags)
-                    tutorial_object.tags.set(tag_obj_list)
-                    return JSONResponse(
-                        {"message ": "Created, Thanks"}, status=status.HTTP_201_CREATED
-                    )
+                tag_obj_list = Tag.objects.filter(name__in=tags)
+                tutorial_object.tags.set(tag_obj_list)
+                return JSONResponse(
+                    {"message ": "Created, Thanks"}, status=status.HTTP_201_CREATED
+                )
             return JSONResponse(
                 {"message ": "Created, Thanks"}, status=status.HTTP_201_CREATED
             )
