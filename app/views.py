@@ -83,8 +83,7 @@ def tags(request):
 
 def taglinks(request, tagname):
     """view for the tutorials with the {tagname}"""
-    taglist = []
-    taglist.append(tagname)
+    taglist = [tagname]
     tutorials = Tutorial.objects.filter(tags__name__in=taglist, publish=True)
     context = {
         'tag': tagname,
@@ -129,18 +128,17 @@ class ContributeView(TemplateView):
                     'contribute.html',
                     self.context
                 )
-            else:
-                tutorial_object = Tutorial.objects.create(
-                    title=title,
-                    link=request.POST['tlink'],
-                    category=request.POST['tcategory']
-                )
-                for tag in tags:
-                    obj, created = Tag.objects.get_or_create(name=tag)
+            tutorial_object = Tutorial.objects.create(
+                title=title,
+                link=request.POST['tlink'],
+                category=request.POST['tcategory']
+            )
+            for tag in tags:
+                obj, created = Tag.objects.get_or_create(name=tag)
 
-                tag_obj_list = Tag.objects.filter(name__in=tags)
-                tutorial_object.tags.set(tag_obj_list)
+            tag_obj_list = Tag.objects.filter(name__in=tags)
+            tutorial_object.tags.set(tag_obj_list)
         # thankyou.html shouldn't be accessible unless someone successfully posts
         # a tutorial
-                return render(request, 'thankyou.html', {'title': 'Thanks!'})
+            return render(request, 'thankyou.html', {'title': 'Thanks!'})
         return render(request, 'thankyou.html', {'title': 'Thanks!'})

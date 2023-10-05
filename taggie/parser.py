@@ -34,7 +34,7 @@ def tokenize_tutorial(title, description, generated_tags):
 
     generated_tags += list(filter(valid_tag, list(title_list + meta_list)))
 
-    if len(generated_tags) == 0:
+    if not generated_tags:
         generated_tags.append('other')
 
     generated_tags = ' '.join(generated_tags).split()
@@ -44,8 +44,6 @@ def tokenize_tutorial(title, description, generated_tags):
 
 def parse_tutorial(res):
     """parses the tutorial page"""
-    temporary_tags = []
-
     html = bs(res.text, "lxml")
 
     og_description = html.find('meta', property="og:description")
@@ -55,10 +53,11 @@ def parse_tutorial(res):
 
     tutorial_title = str(html.title.text).strip()
 
-    for tag in html.find_all('meta', property="article:tag"):
-        if tag is not None:
-            temporary_tags.append(str(tag.get("content")).lower())
-
+    temporary_tags = [
+        str(tag.get("content")).lower()
+        for tag in html.find_all('meta', property="article:tag")
+        if tag is not None
+    ]
     temporary_tags = list(filter(valid_tag, temporary_tags))
 
     if og_description is None and description is not None:
@@ -91,7 +90,7 @@ def get_tutorial(link):
         elif res.status_code == 403:
             raise Exception('Unautorized Access')
         elif res.status_code == 404:
-            raise Exception('{} Not Found'.format(link))
+            raise Exception(f'{link} Not Found')
 
     except requests.exceptions.InvalidURL as e:
         raise Exception(e)
